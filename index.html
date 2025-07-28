@@ -31,7 +31,7 @@
       background-color: #006699;
       padding: 10px;
     }
-    nav button {
+    nav button, nav a {
       padding: 10px;
       background: #00c6ff;
       border: none;
@@ -39,6 +39,7 @@
       font-weight: bold;
       cursor: pointer;
       border-radius: 10px;
+      text-decoration: none;
     }
     .section {
       display: none;
@@ -73,7 +74,14 @@
   </style>
 </head>
 <body>
+
+  <!-- 🔐 AuthPro Login Protection -->
+  <script src="https://www.authpro.com/auth/YOURUSERNAME/?js" type="text/javascript"></script>
+  <noscript><meta http-equiv="refresh" content="0; url=https://www.authpro.com/auth/YOURUSERNAME/" /></noscript>
+
   <header>📱 Smart Tools – by Swapan Baroi</header>
+  <p style="text-align:center; margin: 10px 0;">Welcome, <script>document.write(Auth.User);</script>!</p>
+
   <nav>
     <button onclick="showSection('resize')">📐 Resize</button>
     <button onclick="showSection('age')">🎂 Age Calc</button>
@@ -84,6 +92,8 @@
     <button onclick="showSection('yt')">📹 YT Downloader</button>
     <button onclick="showSection('ytmp3')">🎵 YT to MP3</button>
     <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    <a href="https://www.authpro.com/auth/YOURUSERNAME/?action=register">📝 Register</a>
+    <a href="https://www.authpro.com/auth/YOURUSERNAME/?action=logout">🚪 Logout</a>
   </nav>
 
   <div class="section active" id="resize">
@@ -182,7 +192,6 @@
       const w = parseInt(document.getElementById('resizeW').value);
       const h = parseInt(document.getElementById('resizeH').value);
       if (!file || !w || !h) return alert("Select file and dimensions");
-
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
@@ -252,7 +261,6 @@
       const file = document.getElementById('compressUpload').files[0];
       const targetKB = parseInt(document.getElementById('targetKB').value);
       if (!file || !targetKB) return alert("Select file and size");
-
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
@@ -262,14 +270,12 @@
           canvas.width = img.width;
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0);
-
           let quality = 0.9;
           let result;
           do {
             result = canvas.toDataURL("image/jpeg", quality);
             quality -= 0.05;
           } while (result.length / 1024 > targetKB && quality > 0.1);
-
           const link = document.createElement('a');
           link.href = result;
           link.download = "compressed.jpg";
@@ -284,7 +290,6 @@
     function convertToPassport() {
       const file = document.getElementById('passportUpload').files[0];
       if (!file) return alert("Select image file");
-
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
