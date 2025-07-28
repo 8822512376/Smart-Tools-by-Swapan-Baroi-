@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Tools by Swapan Baroi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      margin: 0;
+      padding: 0;
+      transition: background 0.5s, color 0.5s;
+    }
+    body.dark {
+      background: #1e1e1e;
+      color: #eee;
+    }
+    header {
+      background-color: #004d7a;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      background-color: #006699;
+      padding: 10px;
+    }
+    nav button {
+      padding: 10px;
+      background: #00c6ff;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    .section {
+      display: none;
+      padding: 20px;
+    }
+    .active {
+      display: block;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, button, select, textarea {
+      padding: 10px;
+      margin-top: 5px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    img, canvas {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #004d7a;
+      color: white;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>📱 Smart Tools – by Swapan Baroi</header>
+  <nav>
+    <button onclick="showSection('resize')">📐 Resize</button>
+    <button onclick="showSection('age')">🎂 Age Calc</button>
+    <button onclick="showSection('pdf')">📷 Img to PDF</button>
+    <button onclick="showSection('compress')">🔄 Compress</button>
+    <button onclick="showSection('bgremove')">🧼 BG Remover</button>
+    <button onclick="showSection('passport')">🪪 Passport Photo</button>
+    <button onclick="showSection('yt')">📹 YT Downloader</button>
+    <button onclick="showSection('ytmp3')">🎵 YT to MP3</button>
+    <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+  </nav>
+
+  <div class="section active" id="resize">
+    <h2>📐 Resize Image</h2>
+    <input type="file" id="resizeUpload" accept="image/*">
+    <label>Width:</label><input type="number" id="resizeW">
+    <label>Height:</label><input type="number" id="resizeH">
+    <button onclick="resizeImage()">Resize & Download</button>
+    <canvas id="resizeCanvas" style="display:none;"></canvas>
+    <div id="resizeResult"></div>
+  </div>
+
+  <div class="section" id="age">
+    <h2>🎂 Age Calculator</h2>
+    <label>Date of Birth:</label>
+    <input type="date" id="dob">
+    <button onclick="calculateAge()">Calculate</button>
+    <div id="ageOutput"></div>
+  </div>
+
+  <div class="section" id="pdf">
+    <h2>📷 Image to PDF</h2>
+    <input type="file" id="pdfUpload" accept="image/*" multiple>
+    <button onclick="generatePDF()">Convert & Download PDF</button>
+  </div>
+
+  <div class="section" id="compress">
+    <h2>🔄 Compress Image</h2>
+    <input type="file" id="compressUpload" accept="image/*">
+    <label>Target Size (KB):</label>
+    <input type="number" id="targetKB" value="100">
+    <button onclick="compressImage()">Compress & Download</button>
+    <canvas id="compressCanvas" style="display:none;"></canvas>
+  </div>
+
+  <div class="section" id="bgremove">
+    <h2>🧼 Background Remover</h2>
+    <p>This tool uses a third-party service.</p>
+    <a href="https://www.remove.bg/" target="_blank">
+      🔗 Click here to Remove Background Online
+    </a>
+  </div>
+
+  <div class="section" id="passport">
+    <h2>🪪 Passport Size Photo Converter</h2>
+    <input type="file" id="passportUpload" accept="image/*">
+    <button onclick="convertToPassport()">Convert to Passport Size</button>
+    <canvas id="passportCanvas" style="display:none;"></canvas>
+    <div id="passportResult"></div>
+  </div>
+
+  <div class="section" id="yt">
+    <h2>📹 YouTube Video Downloader</h2>
+    <label>YouTube URL:</label>
+    <input type="url" id="ytURL" placeholder="https://www.youtube.com/watch?v=...">
+    <label>Video Quality:</label>
+    <select id="videoQuality">
+      <option value="default">Auto</option>
+      <option value="360p">360p</option>
+      <option value="480p">480p</option>
+      <option value="720p">720p</option>
+      <option value="1080p">1080p</option>
+    </select>
+    <button onclick="redirectToDownloader()">Download Video</button>
+  </div>
+
+  <div class="section" id="ytmp3">
+    <h2>🎵 YouTube to MP3 Downloader</h2>
+    <label>YouTube Video URL:</label>
+    <input type="url" id="ytmp3URL" placeholder="https://www.youtube.com/watch?v=...">
+    <label>Audio Quality:</label>
+    <select id="audioQuality">
+      <option value="default">Auto</option>
+      <option value="128kbps">128 kbps</option>
+      <option value="256kbps">256 kbps</option>
+      <option value="320kbps">320 kbps</option>
+    </select>
+    <button onclick="redirectToMP3()">Download MP3</button>
+  </div>
+
+  <footer>Made with ❤️ by Swapan Baroi</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    function resizeImage() {
+      const file = document.getElementById('resizeUpload').files[0];
+      const w = parseInt(document.getElementById('resizeW').value);
+      const h = parseInt(document.getElementById('resizeH').value);
+      if (!file || !w || !h) return alert("Select file and dimensions");
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.getElementById('resizeCanvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const link = document.createElement('a');
+          link.href = canvas.toDataURL("image/jpeg", 0.8);
+          link.download = "resized.jpg";
+          link.textContent = "📥 Download Resized Image";
+          document.getElementById('resizeResult').innerHTML = '';
+          document.getElementById('resizeResult').appendChild(link);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function calculateAge() {
+      const dob = new Date(document.getElementById("dob").value);
+      const now = new Date();
+      if (!dob || dob > now) return alert("Enter valid DOB");
+      let y = now.getFullYear() - dob.getFullYear();
+      let m = now.getMonth() - dob.getMonth();
+      let d = now.getDate() - dob.getDate();
+      if (d < 0) { m--; d += 30; }
+      if (m < 0) { y--; m += 12; }
+      const ms = now - dob, s = Math.floor(ms/1000), min = Math.floor(s/60), hr = Math.floor(min/60);
+      document.getElementById("ageOutput").innerHTML = `You are <b>${y} years, ${m} months, ${d} days</b> old.<br>That's ${hr} hrs, ${min} mins, ${s} secs.`;
+    }
+
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const files = document.getElementById('pdfUpload').files;
+      if (files.length === 0) return alert("Select images first");
+      const pdf = new jsPDF();
+      for (let i = 0; i < files.length; i++) {
+        const imgData = await fileToDataURL(files[i]);
+        const img = new Image();
+        img.src = imgData;
+        await new Promise(resolve => {
+          img.onload = () => {
+            const width = pdf.internal.pageSize.getWidth();
+            const height = (img.height / img.width) * width;
+            if (i > 0) pdf.addPage();
+            pdf.addImage(img, 'JPEG', 0, 0, width, height);
+            resolve();
+          };
+        });
+      }
+      pdf.save("converted.pdf");
+    }
+
+    function fileToDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function compressImage() {
+      const file = document.getElementById('compressUpload').files[0];
+      const targetKB = parseInt(document.getElementById('targetKB').value);
+      if (!file || !targetKB) return alert("Select file and size");
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.getElementById('compressCanvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          let quality = 0.9;
+          let result;
+          do {
+            result = canvas.toDataURL("image/jpeg", quality);
+            quality -= 0.05;
+          } while (result.length / 1024 > targetKB && quality > 0.1);
+
+          const link = document.createElement('a');
+          link.href = result;
+          link.download = "compressed.jpg";
+          link.textContent = "📥 Download Compressed Image";
+          document.getElementById('compress').appendChild(link);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function convertToPassport() {
+      const file = document.getElementById('passportUpload').files[0];
+      if (!file) return alert("Select image file");
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.getElementById('passportCanvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = 276;
+          canvas.height = 354;
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const link = document.createElement('a');
+          link.href = canvas.toDataURL("image/jpeg", 0.9);
+          link.download = "passport.jpg";
+          link.textContent = "📥 Download Passport Size Photo";
+          document.getElementById('passportResult').innerHTML = '';
+          document.getElementById('passportResult').appendChild(link);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function redirectToDownloader() {
+      const url = document.getElementById("ytURL").value.trim();
+      const quality = document.getElementById("videoQuality").value;
+      if (!url || (!url.includes("youtube.com") && !url.includes("youtu.be"))) {
+        alert("Enter a valid YouTube URL");
+        return;
+      }
+      let downloader = "https://en.y2mate.is/youtube/" + encodeURIComponent(url);
+      if (quality !== "default") {
+        downloader += `?q=${quality}`;
+      }
+      window.open(downloader, "_blank");
+    }
+
+    function redirectToMP3() {
+      const url = document.getElementById("ytmp3URL").value.trim();
+      const quality = document.getElementById("audioQuality").value;
+      if (!url || (!url.includes("youtube.com") && !url.includes("youtu.be"))) {
+        alert("Enter a valid YouTube URL");
+        return;
+      }
+      let mp3Site = `https://ytmp3.nu/Youtube-to-mp3.php?url=${encodeURIComponent(url)}`;
+      if (quality !== "default") {
+        mp3Site += `&quality=${quality}`;
+      }
+      window.open(mp3Site, "_blank");
+    }
+  </script>
+</body>
+</html>
